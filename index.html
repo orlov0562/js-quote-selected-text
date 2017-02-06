@@ -1,0 +1,75 @@
+<html>
+<head>
+<style>
+#selection-panel {
+  position: absolute;
+  display:none;
+  top:0px;
+  left:0px;
+  background-color: white;
+  border:1px solid silver;
+  padding:5px;
+}
+
+textarea {width:200px;height:100px;}
+</style>
+</head>
+<body>
+
+dasdasdasd<br>
+<textarea>textarea</textarea>
+<hr>
+<textarea id="text"></textarea>
+<div id="selection-panel"><button id="quote-btn">Цитировать</button></div>
+
+<script>
+function removeSelection(){
+  if (window.getSelection) {
+    if (window.getSelection().empty) {  // Chrome
+      window.getSelection().empty();
+    } else if (window.getSelection().removeAllRanges) {  // Firefox
+      window.getSelection().removeAllRanges();
+    }
+  } else if (document.selection) {  // IE?
+    document.selection.empty();
+  }
+}
+
+function getSelectionText() {
+    var text = "";
+    var activeEl = document.activeElement;
+    var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+    if (
+      (activeElTagName == "textarea") || (activeElTagName == "input" &&
+      /^(?:text|search|password|tel|url)$/i.test(activeEl.type)) &&
+      (typeof activeEl.selectionStart == "number")
+    ) {
+        text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+    } else if (window.getSelection) {
+        text = window.getSelection().toString();
+    }
+    return text;
+}
+
+document.onmouseup = document.onkeyup = document.onselectionchange = function(e) {
+    var left  = e.clientX  + "px";
+    var top  = e.clientY  + "px";
+    var txt = getSelectionText() ;
+    var panel = document.getElementById('selection-panel');
+    if (txt != '') {
+        panel.style.top = top;
+        panel.style.left = left;
+        panel.style.display = 'inline-block';
+    } else {
+    	 panel.style.display = 'none';
+    }
+};
+
+document.getElementById('quote-btn').addEventListener('mousedown', function() {
+  document.getElementById('text').value += '[quote]'+getSelectionText()+'[/quote]\n';
+  removeSelection();
+});
+
+</script>
+</body>
+</html>
